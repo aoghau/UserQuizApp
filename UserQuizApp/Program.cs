@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.EntityFrameworkCore;
+using UserQuizApp.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,7 +24,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     };
                 });
 builder.Services.AddSwaggerGen();
-
+builder.Services.AddDbContext<QuizDataContext>(o => o.UseNpgsql(builder.Configuration.GetConnectionString("QuizDB")));
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
