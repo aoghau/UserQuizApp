@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using UserQuizApp.Data;
 using UserQuizApp.Utility;
+using UserQuizApp.Interfaces;
 
 namespace UserQuizApp.Controllers
 {
@@ -10,11 +12,13 @@ namespace UserQuizApp.Controllers
     {
         private IConfiguration _config;
         private QuizDataContext _context;
+        private IAuthService _auth;
 
-        public HomeController(IConfiguration config, QuizDataContext context)
+        public HomeController(IConfiguration config, QuizDataContext context, IAuthService auth)
         {
             _config = config;
             _context = context;
+            _auth = auth;
         }
 
         [HttpGet("home")]
@@ -46,7 +50,7 @@ namespace UserQuizApp.Controllers
         [HttpPost("assign/{quiz}")]
         public IActionResult AssignQuiz(string quizname)
         {            
-            if(ValidateUser()) 
+            if(_auth.ValidateUser()) 
             {                
                 Quiz quiz = _context.Quizzes.Where(x => x.QuizName.Equals(quizname)).FirstOrDefault();
                 var user = _context.Users.Where(x => x.Name.Equals(ValidatedUserName())).FirstOrDefault();
