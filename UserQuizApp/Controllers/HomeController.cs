@@ -15,13 +15,36 @@ namespace UserQuizApp.Controllers
             _config = config;
         }
 
+        [HttpGet("home")]
         public IActionResult Home()
         {
             using(var context = new QuizDataContext())
             {
-               // var wrapper = new ListWrapper<Quiz>
+                var wrapper = new ListWrapper<Quiz>() { List = context.Quizzes.ToArray() };
+                if(ValidateUser())
+                {
+                    var user = context.Users.Where(x => x.Name.Equals(ValidatedUserName())).FirstOrDefault();
+                    user.Quizzes = context.Quizzes.Where(x => x.UserId == user.Id).ToList();
+                    var combwrap = new CombinedWrapper<Quiz>() { List = user.Quizzes.ToArray(), WrapName = user.Name };
+                    return new JsonResult(combwrap);
+                }
+                return new JsonResult(wrapper);
+            }            
+        }
+        
+        [HttpPost("assign/{quiz}")]
+        public IActionResult AssignQuiz(string quizname)
+        {            
+            if(ValidateUser()) 
+            {
+                using(var context = new QuizDataContext())
+                {
+                    Quiz quiz = context.Quizzes.Where(x => x.QuizName.Equals(quizname)).FirstOrDefault();
+                    var user = context.Users.Where(x => x.Name.Equals(ValidatedUserName())).FirstOrDefault();
+                    user.Quizzes.Add(quiz);
+                }
             }
-            return new JsonResult("");
+            return new OkResult();
         }
 
         [HttpPost("sample")]
@@ -31,7 +54,7 @@ namespace UserQuizApp.Controllers
             List<Question> questions = new List<Question>();
             List<Answer> answers = new List<Answer>();
 
-            User sample = new User() { Id = 0, Name = "John Doe", Password = "password", Quizzes = quizzes };
+            User sample = new User() { Id = 0, Name = "user", Password = "password", Quizzes = quizzes };
             Quiz quiz = new Quiz() { Id = 0, QuizName = "Sample Quiz", Questions = questions, User = sample, UserId = 0, IsCompleted = false};
             Question first = new Question() { Id = 0, QuestionText = "Why did the chicken cross the road?", Quiz = quiz, QuizId = 0 };
             Answer joke = new Answer() { Id = 0, AnswerText = "To get to the other side", IsCorrect = true, Question = first, QuestionId = 0 };
