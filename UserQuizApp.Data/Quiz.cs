@@ -10,6 +10,7 @@ namespace UserQuizApp.Data
     {
         public int Id { get; set; }
         public string QuizName { get; set; }
+        public bool IsCompleted {  get; set; }
 
         public List<Question> Questions { get; set; }
 
