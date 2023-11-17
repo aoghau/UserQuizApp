@@ -31,6 +31,21 @@ namespace UserQuizApp.Controllers
                 return new JsonResult(wrapper);
             }            
         }
+
+        [HttpPost("assign")]
+        public IActionResult AssignmentSelection()
+        {
+            if(ValidateUser())
+            {
+                using(var context = new QuizDataContext())
+                {
+                    var quizzes = context.Quizzes.ToArray();
+                    var wrapper = new ListWrapper<Quiz>(){ List = quizzes};
+                    return new JsonResult(wrapper);
+                }
+            }
+            return new JsonResult(null);
+        }
         
         [HttpPost("assign/{quiz}")]
         public IActionResult AssignQuiz(string quizname)
