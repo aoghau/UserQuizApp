@@ -9,10 +9,12 @@ namespace UserQuizApp.Controllers
     public class LoginController : Controller
     {
         private IConfiguration _config;
+        private QuizDataContext _context;
 
-        public LoginController(IConfiguration config)
+        public LoginController(IConfiguration config, QuizDataContext quizDataContext)
         {
             _config = config;
+            _context = quizDataContext;
         }
 
         [HttpPost("Login")]
@@ -50,15 +52,12 @@ namespace UserQuizApp.Controllers
 
 
         private bool IsAuthorizedUser(string username, string password)
-        {
-            using (var context = new QuizDataContext())
+        {            
+            if (_context.Users.Where(x => x.Name.Equals(username) && x.Password.Equals(password)).Single() != null)
             {
-                if (context.Users.Where(x => x.Name.Equals(username) && x.Password.Equals(password)).Single() != null)
-                {
-                    return true;
-                }
-                return false;
+                return true;
             }
+            return false;            
         }
     }
 }

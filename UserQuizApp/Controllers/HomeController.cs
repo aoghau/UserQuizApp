@@ -9,40 +9,36 @@ namespace UserQuizApp.Controllers
     public class HomeController : Controller
     {
         private IConfiguration _config;
+        private QuizDataContext _context;
 
-        public HomeController(IConfiguration config)
+        public HomeController(IConfiguration config, QuizDataContext context)
         {
             _config = config;
+            _context = context;
         }
 
         [HttpGet("home")]
         public IActionResult Home()
-        {
-            using(var context = new QuizDataContext())
+        {            
+            var wrapper = new ListWrapper<Quiz>() { List = _context.Quizzes.ToArray() };
+            if(ValidateUser())
             {
-                var wrapper = new ListWrapper<Quiz>() { List = context.Quizzes.ToArray() };
-                if(ValidateUser())
-                {
-                    var user = context.Users.Where(x => x.Name.Equals(ValidatedUserName())).FirstOrDefault();
-                    user.Quizzes = context.Quizzes.Where(x => x.UserId == user.Id).ToList();
-                    var combwrap = new CombinedWrapper<Quiz>() { List = user.Quizzes.ToArray(), WrapName = user.Name };
-                    return new JsonResult(combwrap);
-                }
-                return new JsonResult(wrapper);
-            }            
+                var user = _context.Users.Where(x => x.Name.Equals(ValidatedUserName())).FirstOrDefault();
+                user.Quizzes = _context.Quizzes.Where(x => x.UserId == user.Id).ToList();
+                var combwrap = new CombinedWrapper<Quiz>() { List = user.Quizzes.ToArray(), WrapName = user.Name };
+                return new JsonResult(combwrap);
+            }
+            return new JsonResult(wrapper);                       
         }
 
         [HttpPost("assign")]
         public IActionResult AssignmentSelection()
         {
             if(ValidateUser())
-            {
-                using(var context = new QuizDataContext())
-                {
-                    var quizzes = context.Quizzes.ToArray();
-                    var wrapper = new ListWrapper<Quiz>(){ List = quizzes};
-                    return new JsonResult(wrapper);
-                }
+            {                
+                var quizzes = _context.Quizzes.ToArray();
+                var wrapper = new ListWrapper<Quiz>(){ List = quizzes};
+                return new JsonResult(wrapper);                
             }
             return new JsonResult(null);
         }
@@ -51,13 +47,10 @@ namespace UserQuizApp.Controllers
         public IActionResult AssignQuiz(string quizname)
         {            
             if(ValidateUser()) 
-            {
-                using(var context = new QuizDataContext())
-                {
-                    Quiz quiz = context.Quizzes.Where(x => x.QuizName.Equals(quizname)).FirstOrDefault();
-                    var user = context.Users.Where(x => x.Name.Equals(ValidatedUserName())).FirstOrDefault();
-                    user.Quizzes.Add(quiz);
-                }
+            {                
+                Quiz quiz = _context.Quizzes.Where(x => x.QuizName.Equals(quizname)).FirstOrDefault();
+                var user = _context.Users.Where(x => x.Name.Equals(ValidatedUserName())).FirstOrDefault();
+                user.Quizzes.Add(quiz);                
             }
             return new OkResult();
         }
@@ -78,14 +71,13 @@ namespace UserQuizApp.Controllers
             questions.Add(first);
             answers.Add(joke);
 
-            using (var context = new QuizDataContext())
-            {
-                context.Users.Add(sample);
-                context.Quizzes.Add(quiz);
-                context.Questions.Add(first);
-                context.Answers.Add(joke);
-                context.SaveChanges();
-            }
+            
+            _context.Users.Add(sample);
+            _context.Quizzes.Add(quiz);
+            _context.Questions.Add(first);
+            _context.Answers.Add(joke);
+            _context.SaveChanges();
+            
             
             return new JsonResult(quiz);
         }
