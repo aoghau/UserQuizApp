@@ -6,16 +6,17 @@ using UserQuizApp.Data;
 using UserQuizApp.Utility;
 using UserQuizApp.Interfaces;
 using UserQuizApp.Middleware;
+using UserQuizApp.Data.Interfaces;
 
 namespace UserQuizApp.Controllers
 {
     public class HomeController : Controller
     {
         private IConfiguration _config;
-        private QuizDataContext _context;
-        private JWTAuthService _auth;
+        private IQuizDataContext _context;
+        private IAuthService _auth;
 
-        public HomeController(IConfiguration config, QuizDataContext context, JWTAuthService auth)
+        public HomeController(IConfiguration config, IQuizDataContext context, IAuthService auth)
         {
             _config = config;
             _context = context;
@@ -41,7 +42,7 @@ namespace UserQuizApp.Controllers
         {
             if(_auth.ValidateUser())
             {                
-                var quizzes = _context.Quizzes.ToArray();
+                var quizzes = _context.GetQuizzes().ToArray();
                 var wrapper = new ListWrapper<Quiz>(){ List = quizzes};
                 return new JsonResult(wrapper);                
             }

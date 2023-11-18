@@ -2,6 +2,10 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using UserQuizApp.Controllers;
 using UserQuizApp.Data;
+using UserQuizApp.Data.Interfaces;
+using UserQuizApp.Interfaces;
+using UserQuizApp.Middleware;
+using UserQuizApp.Utility;
 
 namespace UserQuizAppAPI.Test
 {
@@ -27,18 +31,23 @@ namespace UserQuizAppAPI.Test
             //mockHome.Setup<IActionResult>
         }
 
-
+        [Test]
         public void AssignSelectShouldReturnJSON()
         {
             //Arrange
-            var mockDb = new Mock<QuizDataContext>();            
-            mockDb.Setup<List<User>>(x => x.Users.ToList()).Returns(users);
-            mockDb.Setup<List<Quiz>>(x => x.Quizzes.ToList()).Returns(quizzes);
-            var mockHome = new Mock<HomeController>(mockDb.Object);            
+            var mockDb = new Mock<IQuizDataContext>();
+            var mockAuth = new Mock<IAuthService>();
+            mockDb.Setup<List<User>>(x => x.GetUsers()).Returns(users);
+            mockDb.Setup<List<Quiz>>(x => x.GetQuizzes()).Returns(quizzes);
+            mockAuth.Setup<bool>(x => x.ValidateUser()).Returns(true);
+            var controller = new HomeController(null, mockDb.Object, mockAuth.Object);
 
             //Act
+            var response = controller.AssignmentSelection();
+            var actual = new JsonResult(new ListWrapper<Quiz> { List = quizzes.ToArray() });
 
-
+            //Assert
+            Assert.AreEqual(response.ToString(), actual.ToString());
         }
 
         
