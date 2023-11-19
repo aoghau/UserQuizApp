@@ -27,7 +27,7 @@ namespace UserQuizApp.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Quiz>()
-            .HasOne(q => q.User)
+            .HasOne(q => q.user)
             .WithMany(q => q.Quizzes)
             .HasForeignKey(q => q.UserId);
             

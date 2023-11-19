@@ -102,7 +102,7 @@ namespace UserQuizApp.Controllers
             List<Answer> answers = new List<Answer>();
 
             User sample = new User() { Id = 0, Name = "user", Password = "password", Quizzes = quizzes };
-            Quiz quiz = new Quiz() { Id = 0, QuizName = "Sample Quiz", Questions = questions, User = sample, UserId = 0, IsCompleted = false };
+            Quiz quiz = new Quiz() { Id = 0, QuizName = "Sample Quiz", Questions = questions, user = sample, UserId = 0, IsCompleted = false };
             Question first = new Question() { Id = 0, QuestionText = "Why did the chicken cross the road?", Quiz = quiz, QuizId = 0 };
             Answer joke = new Answer() { Id = 0, AnswerText = "To get to the other side", IsCorrect = true, Question = first, QuestionId = 0 };
 

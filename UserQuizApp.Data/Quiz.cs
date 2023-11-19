@@ -15,6 +15,6 @@ namespace UserQuizApp.Data
         public List<Question> Questions { get; set; }
 
         public int UserId { get; set; }
-        public User User { get; set; }
+        public User user { get; set; }
     }
 }

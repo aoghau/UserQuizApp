@@ -15,7 +15,7 @@ namespace UserQuizAppAPI.Test
         public void Setup()
         {
             sample = new User() { Id = 0, Name = "user", Password = "password", Quizzes = quizzes };
-            quiz = new Quiz() { Id = 0, QuizName = "Sample Quiz", Questions = questions, User = sample, UserId = 0, IsCompleted = false };
+            quiz = new Quiz() { Id = 0, QuizName = "Sample Quiz", Questions = questions, user = sample, UserId = 0, IsCompleted = false };
             first = new Question() { Id = 0, QuestionText = "Why did the chicken cross the road?", Quiz = quiz, QuizId = 0 };
             joke = new Answer() { Id = 0, AnswerText = "To get to the other side", IsCorrect = true, Question = first, QuestionId = 0 };
             quizzes.Add(quiz);

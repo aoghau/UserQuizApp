@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using UserQuizApp.Data;
 using UserQuizApp.Interfaces;
 using UserQuizApp.Middleware;
+using UserQuizApp.Data.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,7 +29,16 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     };
                 });
 builder.Services.AddSwaggerGen();
-builder.Services.AddDbContext<QuizDataContext>(o => o.UseNpgsql(builder.Configuration.GetConnectionString("QuizDB")));
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp", builder =>
+    {
+        builder.WithOrigins("http://localhost:3000")
+               .AllowAnyHeader()
+               .AllowAnyMethod();
+    });
+});
+builder.Services.AddDbContext<IQuizDataContext, QuizDataContext>(o => o.UseNpgsql(builder.Configuration.GetConnectionString("QuizDB")));
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -37,6 +47,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors("AllowReactApp");
 
 app.UseHttpsRedirection();
 

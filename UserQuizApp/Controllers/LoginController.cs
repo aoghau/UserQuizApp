@@ -15,6 +15,7 @@ namespace UserQuizApp.Controllers
         {
             _config = config;
             _context = quizDataContext;
+            //User user = new User(){ };
         }
 
         [HttpPost("Login")]
