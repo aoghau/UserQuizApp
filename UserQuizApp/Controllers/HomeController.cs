@@ -26,11 +26,11 @@ namespace UserQuizApp.Controllers
         [HttpGet("home")]
         public IActionResult Home()
         {            
-            var wrapper = new ListWrapper<Quiz>() { List = _context.Quizzes.ToArray() };
+            var wrapper = new ListWrapper<Quiz>() { List = _context.GetQuizzes().ToArray() };
             if(_auth.ValidateUser())
             {
-                var user = _context.Users.Where(x => x.Name.Equals(_auth.ValidatedUserName())).FirstOrDefault();
-                user.Quizzes = _context.Quizzes.Where(x => x.UserId == user.Id).ToList();
+                var user = _context.GetUsers().Where(x => x.Name.Equals(_auth.ValidatedUserName())).FirstOrDefault();
+                user.Quizzes = _context.GetQuizzes().Where(x => x.UserId == user.Id).ToList();
                 var combwrap = new CombinedWrapper<Quiz>() { List = user.Quizzes.ToArray(), WrapName = user.Name };
                 return new JsonResult(combwrap);
             }
@@ -48,18 +48,40 @@ namespace UserQuizApp.Controllers
             }
             return new JsonResult(null);
         }
+
+
         
         [HttpPost("assign/{quiz}")]
         public IActionResult AssignQuiz(string quizname)
         {            
             if(_auth.ValidateUser()) 
             {                
-                Quiz quiz = _context.Quizzes.Where(x => x.QuizName.Equals(quizname)).FirstOrDefault();
-                var user = _context.Users.Where(x => x.Name.Equals(_auth.ValidatedUserName())).FirstOrDefault();
+                Quiz quiz = _context.GetQuizzes().Where(x => x.QuizName.Equals(quizname)).FirstOrDefault();
+                var user = _context.GetUsers().Where(x => x.Name.Equals(_auth.ValidatedUserName())).FirstOrDefault();
                 user.Quizzes.Add(quiz);                
             }
             return new OkResult();
         }
+
+        [HttpPost("pass/{quiz}")]
+        public IActionResult PassQuiz(string quizname)
+        {
+            if(_auth.ValidateUser())
+            {
+                Quiz quiz = _context.GetQuizzes().Where(x => x.QuizName.Equals(quizname)).FirstOrDefault();
+                quiz.IsCompleted = true;
+            }
+            return new OkResult();
+        }
+
+        //public IActionResult LoadQuiz(string quizname) 
+        //{
+        //    if(_auth.ValidateUser())
+        //    {
+        //        Quiz quiz = _context.GetQuizzes().Where(x => x.QuizName.Equals(quizname)).FirstOrDefault();
+
+        //    }
+        //}
 
         [HttpPost("sample")]
         public IActionResult AddSample()
