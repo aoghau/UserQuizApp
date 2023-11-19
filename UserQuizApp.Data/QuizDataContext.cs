@@ -4,10 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UserQuizApp.Data.Interfaces;
 
 namespace UserQuizApp.Data
 {
-    public class QuizDataContext : DbContext
+    public class QuizDataContext : DbContext, IQuizDataContext
     {
         public QuizDataContext(DbContextOptions<QuizDataContext> options) : base(options) 
         {
@@ -45,5 +46,30 @@ namespace UserQuizApp.Data
         public DbSet<Quiz> Quizzes { get; set; }
         public DbSet<Question> Questions { get; set; }
         public DbSet<Answer> Answers { get; set; }
+
+        public List<User> GetUsers()
+        {
+            return Users.ToList();
+        }
+
+        public List<Quiz> GetQuizzes()
+        {
+            return Quizzes.ToList();
+        }
+
+        public List<Question> GetQuestions() 
+        {
+            return Questions.ToList();
+        }
+
+        public List<Answer> GetAnswers()
+        {
+            return Answers.ToList();
+        }
+
+        public int SaveChanges()
+        {
+            return base.SaveChanges();
+        }
     }
 }

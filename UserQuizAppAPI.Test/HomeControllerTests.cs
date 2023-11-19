@@ -2,6 +2,10 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using UserQuizApp.Controllers;
 using UserQuizApp.Data;
+using UserQuizApp.Data.Interfaces;
+using UserQuizApp.Interfaces;
+using UserQuizApp.Middleware;
+using UserQuizApp.Utility;
 
 namespace UserQuizAppAPI.Test
 {
@@ -20,28 +24,88 @@ namespace UserQuizAppAPI.Test
             users.Add(sample);
         }
 
-        public void HomeTest()
-        {
-            var mockDb = new Mock<QuizDataContext>();
-            var mockHome = new Mock<HomeController>();
-            //mockHome.Setup<IActionResult>
-        }
-
-
-        public void AssignSelectShouldReturnJSON()
+        [Test]
+        public void Home_ReturnsValidResponseWhenLoggedIn()
         {
             //Arrange
-            var mockDb = new Mock<QuizDataContext>();            
-            mockDb.Setup<List<User>>(x => x.Users.ToList()).Returns(users);
-            mockDb.Setup<List<Quiz>>(x => x.Quizzes.ToList()).Returns(quizzes);
-            var mockHome = new Mock<HomeController>(mockDb.Object);            
-
+            var mockDb = new Mock<IQuizDataContext>();
+            var mockAuth = new Mock<IAuthService>();
+            mockDb.Setup<List<User>>(x => x.GetUsers()).Returns(users);
+            mockDb.Setup<List<Quiz>>(x => x.GetQuizzes()).Returns(quizzes);
+            mockAuth.Setup<bool>(x => x.ValidateUser()).Returns(true);
+            mockAuth.Setup<string>(x => x.ValidatedUserName()).Returns(sample.Name);
+            var controller = new HomeController(null, mockDb.Object, mockAuth.Object);
+            var combwrap = new CombinedWrapper<Quiz>(){ List = quizzes.ToArray(), WrapName = sample.Name};
+            var actual = new JsonResult(combwrap);
             //Act
+            var response = controller.Home();
 
-
+            //Assert
+            Assert.AreEqual(response.ToString(), actual.ToString());
         }
 
-        
+        [Test]
+        public void AssignmentSelection_ShouldReturnJSON()
+        {
+            //Arrange
+            var mockDb = new Mock<IQuizDataContext>();
+            var mockAuth = new Mock<IAuthService>();
+            mockDb.Setup<List<User>>(x => x.GetUsers()).Returns(users);
+            mockDb.Setup<List<Quiz>>(x => x.GetQuizzes()).Returns(quizzes);
+            mockAuth.Setup<bool>(x => x.ValidateUser()).Returns(true);
+            var controller = new HomeController(null, mockDb.Object, mockAuth.Object);
+
+            //Act
+            var response = controller.AssignmentSelection();
+            var actual = new JsonResult(new ListWrapper<Quiz> { List = quizzes.ToArray() });
+
+            //Assert
+            Assert.AreEqual(response.ToString(), actual.ToString());
+        }
+
+        [Test]
+        public void AssignQuiz_ShouldAssignQuizToUser()
+        {
+            //Arrange
+            var mockDb = new Mock<IQuizDataContext>();
+            var mockAuth = new Mock<IAuthService>();
+            var newquizzes = quizzes;
+            mockDb.Setup<List<User>>(x => x.GetUsers()).Returns(users);
+            mockDb.Setup<List<Quiz>>(x => x.GetQuizzes()).Returns(newquizzes);
+            mockAuth.Setup<bool>(x => x.ValidateUser()).Returns(true);
+            mockAuth.Setup<string>(x => x.ValidatedUserName()).Returns(sample.Name);
+            var newquiz = new Quiz() { QuizName = "new", IsCompleted = false, Questions = null, Id = 1 };
+            newquizzes.Add(newquiz);
+            var controller = new HomeController(null, mockDb.Object, mockAuth.Object);
+
+            //Act
+            controller.AssignQuiz(newquiz.QuizName);
+
+            //Assert
+            Assert.IsNotNull(sample.Quizzes.Where(x => x.QuizName.Equals(newquiz.QuizName)).FirstOrDefault());
+        }
+
+        [Test]
+        public void PassQuiz_ShouldMarkQuizAsPassed()
+        {
+            //Arrange
+            var mockDb = new Mock<IQuizDataContext>();
+            var mockAuth = new Mock<IAuthService>();
+            var newquizzes = quizzes;
+            mockDb.Setup<List<User>>(x => x.GetUsers()).Returns(users);
+            mockDb.Setup<List<Quiz>>(x => x.GetQuizzes()).Returns(newquizzes);
+            mockAuth.Setup<bool>(x => x.ValidateUser()).Returns(true);
+            mockAuth.Setup<string>(x => x.ValidatedUserName()).Returns(sample.Name);
+            var newquiz = new Quiz() { QuizName = "new", IsCompleted = false, Questions = null, Id = 1 };
+            newquizzes.Add(newquiz);
+            var controller = new HomeController(null, mockDb.Object, mockAuth.Object);
+
+            //Act
+            controller.PassQuiz(newquiz.QuizName);
+
+            //Assert
+            Assert.IsTrue(quizzes.Where(x => x.QuizName.Equals(newquiz.QuizName)).FirstOrDefault().IsCompleted);
+        }
 
         private List<User> users = new List<User>();
         private List<Quiz> quizzes = new List<Quiz>();

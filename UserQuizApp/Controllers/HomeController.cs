@@ -6,16 +6,17 @@ using UserQuizApp.Data;
 using UserQuizApp.Utility;
 using UserQuizApp.Interfaces;
 using UserQuizApp.Middleware;
+using UserQuizApp.Data.Interfaces;
 
 namespace UserQuizApp.Controllers
 {
     public class HomeController : Controller
     {
         private IConfiguration _config;
-        private QuizDataContext _context;
-        private JWTAuthService _auth;
+        private IQuizDataContext _context;
+        private IAuthService _auth;
 
-        public HomeController(IConfiguration config, QuizDataContext context, JWTAuthService auth)
+        public HomeController(IConfiguration config, IQuizDataContext context, IAuthService auth)
         {
             _config = config;
             _context = context;
@@ -24,40 +25,73 @@ namespace UserQuizApp.Controllers
 
         [HttpGet("home")]
         public IActionResult Home()
-        {            
-            var wrapper = new ListWrapper<Quiz>() { List = _context.Quizzes.ToArray() };
-            if(_auth.ValidateUser())
+        {
+            var wrapper = new ListWrapper<Quiz>() { List = _context.GetQuizzes().ToArray() };
+            if (_auth.ValidateUser())
             {
-                var user = _context.Users.Where(x => x.Name.Equals(_auth.ValidatedUserName())).FirstOrDefault();
-                user.Quizzes = _context.Quizzes.Where(x => x.UserId == user.Id).ToList();
+                var user = _context.GetUsers().Where(x => x.Name.Equals(_auth.ValidatedUserName())).FirstOrDefault();
+                user.Quizzes = _context.GetQuizzes().Where(x => x.UserId == user.Id).ToList();
                 var combwrap = new CombinedWrapper<Quiz>() { List = user.Quizzes.ToArray(), WrapName = user.Name };
                 return new JsonResult(combwrap);
             }
-            return new JsonResult(wrapper);                       
+            return new JsonResult(wrapper);
         }
 
         [HttpPost("assign")]
         public IActionResult AssignmentSelection()
         {
-            if(_auth.ValidateUser())
-            {                
-                var quizzes = _context.Quizzes.ToArray();
-                var wrapper = new ListWrapper<Quiz>(){ List = quizzes};
-                return new JsonResult(wrapper);                
+            if (_auth.ValidateUser())
+            {
+                var quizzes = _context.GetQuizzes().ToArray();
+                var wrapper = new ListWrapper<Quiz>() { List = quizzes };
+                return new JsonResult(wrapper);
             }
-            return new JsonResult(null);
+            return new UnauthorizedResult();
         }
-        
+
+
+
         [HttpPost("assign/{quiz}")]
         public IActionResult AssignQuiz(string quizname)
-        {            
-            if(_auth.ValidateUser()) 
-            {                
-                Quiz quiz = _context.Quizzes.Where(x => x.QuizName.Equals(quizname)).FirstOrDefault();
-                var user = _context.Users.Where(x => x.Name.Equals(_auth.ValidatedUserName())).FirstOrDefault();
-                user.Quizzes.Add(quiz);                
+        {
+            if (_auth.ValidateUser())
+            {
+                Quiz quiz = _context.GetQuizzes().Where(x => x.QuizName.Equals(quizname)).FirstOrDefault();
+                var user = _context.GetUsers().Where(x => x.Name.Equals(_auth.ValidatedUserName())).FirstOrDefault();
+                user.Quizzes.Add(quiz);
             }
             return new OkResult();
+        }
+
+        [HttpPost("pass/{quiz}")]
+        public IActionResult PassQuiz(string quizname)
+        {
+            if (_auth.ValidateUser())
+            {
+                Quiz quiz = _context.GetQuizzes().Where(x => x.QuizName.Equals(quizname)).FirstOrDefault();
+                quiz.IsCompleted = true;
+            }
+            return new OkResult();
+        }
+
+        [HttpGet("{quiz}")]
+        public IActionResult LoadQuiz(string quizname)
+        {
+            if (_auth.ValidateUser())
+            {
+                Quiz quiz = _context.GetQuizzes().Where(x => x.QuizName.Equals(quizname)).FirstOrDefault();
+                List<Question> quizQuestions = _context.GetQuestions().Where(x => x.QuizId == quiz.Id).ToList();
+                List<QuestionWrapper> questionWrappers = new List<QuestionWrapper>();
+                for(int i = 0; i < quizQuestions.Count; i++) 
+                {
+                    List<Answer> answers = _context.GetAnswers().Where(x => x.QuestionId == quizQuestions[i].Id).ToList();
+                    QuestionWrapper question = new QuestionWrapper(){ QuestionWrapText = quizQuestions[i].QuestionText, QuestionAnswers = answers  };
+                    questionWrappers.Add(question);
+                }
+                QuizWrapper quizWrapper = new QuizWrapper() { QuizWrapName = quiz.QuizName, List = questionWrappers};
+                return new JsonResult(quizWrapper);
+            }
+            return new UnauthorizedResult();
         }
 
         [HttpPost("sample")]
