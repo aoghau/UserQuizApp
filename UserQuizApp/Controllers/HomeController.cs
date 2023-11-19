@@ -25,40 +25,40 @@ namespace UserQuizApp.Controllers
 
         [HttpGet("home")]
         public IActionResult Home()
-        {            
+        {
             var wrapper = new ListWrapper<Quiz>() { List = _context.GetQuizzes().ToArray() };
-            if(_auth.ValidateUser())
+            if (_auth.ValidateUser())
             {
                 var user = _context.GetUsers().Where(x => x.Name.Equals(_auth.ValidatedUserName())).FirstOrDefault();
                 user.Quizzes = _context.GetQuizzes().Where(x => x.UserId == user.Id).ToList();
                 var combwrap = new CombinedWrapper<Quiz>() { List = user.Quizzes.ToArray(), WrapName = user.Name };
                 return new JsonResult(combwrap);
             }
-            return new JsonResult(wrapper);                       
+            return new JsonResult(wrapper);
         }
 
         [HttpPost("assign")]
         public IActionResult AssignmentSelection()
         {
-            if(_auth.ValidateUser())
-            {                
+            if (_auth.ValidateUser())
+            {
                 var quizzes = _context.GetQuizzes().ToArray();
-                var wrapper = new ListWrapper<Quiz>(){ List = quizzes};
-                return new JsonResult(wrapper);                
+                var wrapper = new ListWrapper<Quiz>() { List = quizzes };
+                return new JsonResult(wrapper);
             }
-            return new JsonResult(null);
+            return new UnauthorizedResult();
         }
 
 
-        
+
         [HttpPost("assign/{quiz}")]
         public IActionResult AssignQuiz(string quizname)
-        {            
-            if(_auth.ValidateUser()) 
-            {                
+        {
+            if (_auth.ValidateUser())
+            {
                 Quiz quiz = _context.GetQuizzes().Where(x => x.QuizName.Equals(quizname)).FirstOrDefault();
                 var user = _context.GetUsers().Where(x => x.Name.Equals(_auth.ValidatedUserName())).FirstOrDefault();
-                user.Quizzes.Add(quiz);                
+                user.Quizzes.Add(quiz);
             }
             return new OkResult();
         }
@@ -66,7 +66,7 @@ namespace UserQuizApp.Controllers
         [HttpPost("pass/{quiz}")]
         public IActionResult PassQuiz(string quizname)
         {
-            if(_auth.ValidateUser())
+            if (_auth.ValidateUser())
             {
                 Quiz quiz = _context.GetQuizzes().Where(x => x.QuizName.Equals(quizname)).FirstOrDefault();
                 quiz.IsCompleted = true;
@@ -74,14 +74,25 @@ namespace UserQuizApp.Controllers
             return new OkResult();
         }
 
-        //public IActionResult LoadQuiz(string quizname) 
-        //{
-        //    if(_auth.ValidateUser())
-        //    {
-        //        Quiz quiz = _context.GetQuizzes().Where(x => x.QuizName.Equals(quizname)).FirstOrDefault();
-
-        //    }
-        //}
+        [HttpGet("{quiz}")]
+        public IActionResult LoadQuiz(string quizname)
+        {
+            if (_auth.ValidateUser())
+            {
+                Quiz quiz = _context.GetQuizzes().Where(x => x.QuizName.Equals(quizname)).FirstOrDefault();
+                List<Question> quizQuestions = _context.GetQuestions().Where(x => x.QuizId == quiz.Id).ToList();
+                List<QuestionWrapper> questionWrappers = new List<QuestionWrapper>();
+                for(int i = 0; i < quizQuestions.Count; i++) 
+                {
+                    List<Answer> answers = _context.GetAnswers().Where(x => x.QuestionId == quizQuestions[i].Id).ToList();
+                    QuestionWrapper question = new QuestionWrapper(){ QuestionWrapText = quizQuestions[i].QuestionText, QuestionAnswers = answers  };
+                    questionWrappers.Add(question);
+                }
+                QuizWrapper quizWrapper = new QuizWrapper() { QuizWrapName = quiz.QuizName, List = questionWrappers};
+                return new JsonResult(quizWrapper);
+            }
+            return new UnauthorizedResult();
+        }
 
         [HttpPost("sample")]
         public IActionResult AddSample()

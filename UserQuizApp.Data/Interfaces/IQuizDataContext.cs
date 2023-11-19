@@ -16,6 +16,8 @@ namespace UserQuizApp.Data.Interfaces
 
         public List<User> GetUsers();
         public List<Quiz> GetQuizzes();
+        public List<Question> GetQuestions();
+        public List<Answer> GetAnswers();
         public int SaveChanges();
     }
 }

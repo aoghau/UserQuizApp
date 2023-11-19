@@ -57,6 +57,16 @@ namespace UserQuizApp.Data
             return Quizzes.ToList();
         }
 
+        public List<Question> GetQuestions() 
+        {
+            return Questions.ToList();
+        }
+
+        public List<Answer> GetAnswers()
+        {
+            return Answers.ToList();
+        }
+
         public int SaveChanges()
         {
             return base.SaveChanges();
