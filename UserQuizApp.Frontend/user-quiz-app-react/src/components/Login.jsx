@@ -33,7 +33,7 @@ const Login = () => {
 
   const saveUser = () => {
     fetch(
-      `http://localhost:7268/Login?name=${user.name}&password=${user.password}`,
+      `https://localhost:44348/Login?name=${user.name}&password=${user.password}`,
       {
         method: "POST",
         headers: {

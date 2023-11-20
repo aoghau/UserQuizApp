@@ -10,7 +10,7 @@ namespace UserQuizApp.Middleware
 
         public JWTAuthService(IHttpContextAccessor contextAccessor)
         {
-            _contextAccessor = contextAccessor;
+            _contextAccessor = contextAccessor;            
         }
 
         public bool ValidateUser()

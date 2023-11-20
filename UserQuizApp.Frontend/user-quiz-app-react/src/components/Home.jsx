@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { json, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 const Home = () => {
@@ -7,7 +7,7 @@ const Home = () => {
   const list = useSelector((state) => state.list);
   const wrapName = useSelector((state) => state.wrapName);
   const dispatch = useDispatch();
-  const apiUrl = `http://localhost:44348`;
+  const apiUrl = `https://localhost:44348`;
   const home = apiUrl + `/home`;
 
   const headers = new Headers({
@@ -26,7 +26,8 @@ const Home = () => {
       headers: headers,
     })
       .then((res) => res.json)
-      .then((json) => dispatch({ type: "UPDATE_DATA", payload: json }));
+      .then((json) => dispatch({ type: "UPDATE_DATA", payload: json }))
+      .then(() => console.log(json));
   };
 
   const bearerToken = localStorage.getItem("bearer");
@@ -56,10 +57,10 @@ const Home = () => {
       <div>
         <ul>
           {list.map((item) => (
-            <li key={item.Id}>
-              <p>{item.QuizName}</p>
-              <p style={{ color: item.IsCompleted ? "green" : "grey" }}>
-                {item.IsCompleted ? "Completed" : "Not started"}
+            <li key={item.id}>
+              <p>{item.quizName}</p>
+              <p style={{ color: item.isCompleted ? "green" : "grey" }}>
+                {item.isCompleted ? "Completed" : "Not started"}
               </p>
             </li>
           ))}

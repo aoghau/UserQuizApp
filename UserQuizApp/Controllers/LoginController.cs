@@ -3,19 +3,29 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using UserQuizApp.Data;
+using UserQuizApp.Data.Interfaces;
 
 namespace UserQuizApp.Controllers
 {
     public class LoginController : Controller
     {
         private IConfiguration _config;
-        private QuizDataContext _context;
+        private IQuizDataContext _context;
 
-        public LoginController(IConfiguration config, QuizDataContext quizDataContext)
+        public LoginController(IConfiguration config, IQuizDataContext quizDataContext)
         {
             _config = config;
             _context = quizDataContext;
             //User user = new User(){ };
+        }
+
+        [HttpGet("sample")]
+        public IActionResult CreateSampleUser() 
+        {
+            User sample = new User() { Id = 0, Name = "user", Password = "password" };
+            _context.Users.Add(sample);
+            _context.SaveChanges();
+            return new OkObjectResult(sample);
         }
 
         [HttpPost("Login")]

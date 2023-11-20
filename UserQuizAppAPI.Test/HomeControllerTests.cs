@@ -107,6 +107,39 @@ namespace UserQuizAppAPI.Test
             Assert.IsTrue(quizzes.Where(x => x.QuizName.Equals(newquiz.QuizName)).FirstOrDefault().IsCompleted);
         }
 
+        [Test]
+        public void LoadQuiz_ShouldReturnTheQuiz()
+        {
+            //Arrange
+            var mockDb = new Mock<IQuizDataContext>();
+            var mockAuth = new Mock<IAuthService>();
+            var newquizzes = quizzes;
+            mockDb.Setup<List<User>>(x => x.GetUsers()).Returns(users);
+            mockDb.Setup<List<Quiz>>(x => x.GetQuizzes()).Returns(newquizzes);
+            mockDb.Setup<List<Question>>(x => x.GetQuestions()).Returns(questions);
+            mockDb.Setup<List<Answer>>(x => x.GetAnswers()).Returns(answers);
+            mockAuth.Setup<bool>(x => x.ValidateUser()).Returns(true);
+            mockAuth.Setup<string>(x => x.ValidatedUserName()).Returns(sample.Name);
+            var newquiz = new Quiz() { QuizName = "new", IsCompleted = false, Questions = questions, Id = 1 };
+            newquizzes.Add(newquiz);
+            List<QuestionWrapper> actualWrappers = new List<QuestionWrapper>();
+            for(int i = 0; i < newquiz.Questions.Count; i++) 
+            {
+                List<Answer> newanswers = answers.Where(x => x.QuestionId == newquiz.Questions[i].Id).ToList();
+                QuestionWrapper questionWrapper = new QuestionWrapper(){ QuestionAnswers = newanswers, QuestionWrapText = newquiz.Questions[i].QuestionText };
+                actualWrappers.Add(questionWrapper);
+            }
+            QuizWrapper wrapper = new QuizWrapper(){ List = actualWrappers, QuizWrapName = newquiz.QuizName};
+            var actual = new JsonResult(wrapper);
+            var controller = new HomeController(null, mockDb.Object, mockAuth.Object);
+
+            //Act
+            var response = controller.LoadQuiz("new");
+
+            //Assert
+            Assert.AreEqual(response.ToString(), actual.ToString());
+        }
+
         private List<User> users = new List<User>();
         private List<Quiz> quizzes = new List<Quiz>();
         private List<Question> questions = new List<Question>();

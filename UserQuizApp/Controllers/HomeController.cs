@@ -101,7 +101,8 @@ namespace UserQuizApp.Controllers
             List<Question> questions = new List<Question>();
             List<Answer> answers = new List<Answer>();
 
-            User sample = new User() { Id = 0, Name = "user", Password = "password", Quizzes = quizzes };
+            User sample = _context.Users.Where(x => x.Name.Equals("user")).FirstOrDefault();
+            sample.Quizzes = quizzes;
             Quiz quiz = new Quiz() { Id = 0, QuizName = "Sample Quiz", Questions = questions, user = sample, UserId = 0, IsCompleted = false };
             Question first = new Question() { Id = 0, QuestionText = "Why did the chicken cross the road?", Quiz = quiz, QuizId = 0 };
             Answer joke = new Answer() { Id = 0, AnswerText = "To get to the other side", IsCorrect = true, Question = first, QuestionId = 0 };
@@ -109,9 +110,7 @@ namespace UserQuizApp.Controllers
             quizzes.Add(quiz);
             questions.Add(first);
             answers.Add(joke);
-
-
-            _context.Users.Add(sample);
+            
             _context.Quizzes.Add(quiz);
             _context.Questions.Add(first);
             _context.Answers.Add(joke);
