@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34221.43
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserQuizApp", "UserQuizApp\UserQuizApp.csproj", "{4FD0C649-BC00-441B-9C83-AAFBDDC79BAF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserQuizApp", "UserQuizApp\UserQuizApp.csproj", "{4FD0C649-BC00-441B-9C83-AAFBDDC79BAF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserQuizApp.Data", "UserQuizApp.Data\UserQuizApp.Data.csproj", "{50DC8E50-0545-446F-B2E9-79EAA3FF3773}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserQuizApp.Data", "UserQuizApp.Data\UserQuizApp.Data.csproj", "{50DC8E50-0545-446F-B2E9-79EAA3FF3773}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserQuizAppAPI.Test", "UserQuizAppAPI.Test\UserQuizAppAPI.Test.csproj", "{CE076D2D-6FBB-479B-911C-6160459E142D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{50DC8E50-0545-446F-B2E9-79EAA3FF3773}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{50DC8E50-0545-446F-B2E9-79EAA3FF3773}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{50DC8E50-0545-446F-B2E9-79EAA3FF3773}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CE076D2D-6FBB-479B-911C-6160459E142D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE076D2D-6FBB-479B-911C-6160459E142D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE076D2D-6FBB-479B-911C-6160459E142D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE076D2D-6FBB-479B-911C-6160459E142D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
