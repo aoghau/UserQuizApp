@@ -15,9 +15,9 @@ namespace UserQuizAppAPI.Test
         public void Setup()
         {
             sample = new User() { Id = 0, Name = "user", Password = "password", Quizzes = quizzes };
-            quiz = new Quiz() { Id = 0, QuizName = "Sample Quiz", Questions = questions, user = sample, UserId = 0, IsCompleted = false };
-            first = new Question() { Id = 0, QuestionText = "Why did the chicken cross the road?", Quiz = quiz, QuizId = 0 };
-            joke = new Answer() { Id = 0, AnswerText = "To get to the other side", IsCorrect = true, Question = first, QuestionId = 0 };
+            quiz = new Quiz() { Id = 0, QuizName = "Sample Quiz", Questions = questions, UserId = 0, IsCompleted = false };
+            first = new Question() { Id = 0, QuestionText = "Why did the chicken cross the road?", QuizId = 0 };
+            joke = new Answer() { Id = 0, AnswerText = "To get to the other side", IsCorrect = true, QuestionId = 0 };
             quizzes.Add(quiz);
             questions.Add(first);
             answers.Add(joke);
@@ -134,7 +134,7 @@ namespace UserQuizAppAPI.Test
             var controller = new HomeController(null, mockDb.Object, mockAuth.Object);
 
             //Act
-            var response = controller.LoadQuiz("new");
+            var response = controller.LoadQuiz(1);
 
             //Assert
             Assert.AreEqual(response.ToString(), actual.ToString());

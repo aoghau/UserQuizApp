@@ -1,7 +1,7 @@
 const initialState = {
-  isWrapAdmin: false,
   list: [],
   wrapName: null,
+  quizList: [],
 };
 
 const rootReducer = (state = initialState, action) => {
@@ -9,7 +9,13 @@ const rootReducer = (state = initialState, action) => {
     case "UPDATE_DATA":
       return action.payload;
     case "UPDATE_LIST":
-      return { ...state, list: action.payload };
+      return {
+        ...state,
+        list: action.payload.list,
+        wrapName: action.payload.wrapName,
+      };
+    case "UPDATE_QUIZLIST":
+      return { ...state, quizList: action.payload };
     default:
       return state;
   }

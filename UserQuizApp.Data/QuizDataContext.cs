@@ -26,20 +26,18 @@ namespace UserQuizApp.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Quiz>()
-            .HasOne(q => q.user)
-            .WithMany(q => q.Quizzes)
-            .HasForeignKey(q => q.UserId);
+            ////modelBuilder.Entity<Quiz>()            
+            ////.HasForeignKey(q => q.UserId);
             
-            modelBuilder.Entity<Question>()
-            .HasOne(q => q.Quiz)
-            .WithMany(q => q.Questions)
-            .HasForeignKey(q => q.QuizId);
+            //modelBuilder.Entity<Question>()
+            //.HasOne(q => q.Quiz)
+            //.WithMany(q => q.Questions)
+            //.HasForeignKey(q => q.QuizId);
 
-            modelBuilder.Entity<Answer>()
-            .HasOne(a => a.Question)
-            .WithMany(a => a.Answers)
-            .HasForeignKey(a => a.QuestionId);
+            //modelBuilder.Entity<Answer>()
+            //.HasOne(a => a.Question)
+            //.WithMany(a => a.Answers)
+            //.HasForeignKey(a => a.QuestionId);
         }
 
         public DbSet<User> Users { get; set; }

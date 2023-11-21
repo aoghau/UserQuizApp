@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { json, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 const Home = () => {
@@ -20,14 +20,23 @@ const Home = () => {
     Authorization: "bearer " + localStorage.getItem("bearer"),
   });
 
+  const noAuthHeaders = new Headers({
+    Accept: "application/json",
+    "Access-Control-Allow-Origin": "*",
+    "X-Requested-With": "XMLHttpRequest",
+    "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS",
+    "Access-Control-Allow-Headers":
+      "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With",
+    "Content-Type": "application/json",
+  });
+
   const getList = () => {
     fetch(home, {
       method: "GET",
       headers: headers,
     })
-      .then((res) => res.json)
-      .then((json) => dispatch({ type: "UPDATE_DATA", payload: json }))
-      .then(() => console.log(json));
+      .then((res) => res.json())
+      .then((json) => dispatch({ type: "UPDATE_DATA", payload: json }));
   };
 
   const bearerToken = localStorage.getItem("bearer");
@@ -37,9 +46,9 @@ const Home = () => {
     else {
       fetch(home, {
         method: "GET",
-        headers: headers,
+        headers: noAuthHeaders,
       })
-        .then((res) => res.json)
+        .then((res) => res.json())
         .then((json) => dispatch({ type: "UPDATE_DATA", payload: json }));
     }
   }, []);
@@ -52,20 +61,29 @@ const Home = () => {
   return (
     <div>
       <div>
-        <h1>Select Quiz</h1>
+        <h1 className="text-green-400">Select Quiz</h1>
       </div>
       <div>
         <ul>
-          {list.map((item) => (
-            <li key={item.id}>
-              <p>{item.quizName}</p>
-              <p style={{ color: item.isCompleted ? "green" : "grey" }}>
+          {list?.map((item) => (
+            <li key={item?.id}>
+              <p>{item?.quizName}</p>
+              <p
+                style={{
+                  color: item?.isCompleted ? "text-green-400" : "text-grey-400",
+                }}
+              >
                 {item.isCompleted ? "Completed" : "Not started"}
               </p>
+              <button onClick={() => navigate("/")}>Start</button>
+              <button onClick={() => navigate(`/quiz/${item?.id}`)}>
+                Go to Quiz
+              </button>
             </li>
           ))}
         </ul>
       </div>
+      <button onClick={() => logOut()}>LogOut</button>
     </div>
   );
 };

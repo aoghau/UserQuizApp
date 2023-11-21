@@ -64,7 +64,7 @@ namespace UserQuizApp.Controllers
 
         private bool IsAuthorizedUser(string username, string password)
         {            
-            if (_context.Users.Where(x => x.Name.Equals(username) && x.Password.Equals(password)).Single() != null)
+            if (_context.Users.Where(x => x.Name.Equals(username) && x.Password.Equals(password))?.Single() != null)
             {
                 return true;
             }
