@@ -23,16 +23,22 @@ const Results = () => {
   };
 
   return (
-    <div>
-      <div>
-        <h4>Submit Quiz?</h4>
-      </div>
-      <div>
-        <button onClick={passQuiz}>Yes</button>
-      </div>
-      <div>
-        <button onClick={navigate(`/home`)}>No</button>
-      </div>
+    <div className="w-full flex flex-col items-center justify-center h-screen">
+      <h4 className="text-green-400 text-xl font-bold mb-5">Submit Quiz?</h4>
+
+      <button
+        onClick={passQuiz}
+        className="text-center bg-green-400 text-base w-32 my-5 border border-gray-400 rounded-md h-10  font-bold"
+      >
+        Yes
+      </button>
+
+      <button
+        onClick={navigate(`/home`)}
+        className="text-center bg-green-400 text-base w-32 my-5 border border-gray-400 rounded-md h-10  font-bold"
+      >
+        No
+      </button>
     </div>
   );
 };

@@ -36,7 +36,7 @@ const Home = () => {
       headers: headers,
     })
       .then((res) => res.json())
-      .then((json) => dispatch({ type: "UPDATE_DATA", payload: json }));
+      .then((json) => dispatch({ type: "UPDATE_LIST", payload: json }));
   };
 
   const bearerToken = localStorage.getItem("bearer");
@@ -49,7 +49,7 @@ const Home = () => {
         headers: noAuthHeaders,
       })
         .then((res) => res.json())
-        .then((json) => dispatch({ type: "UPDATE_DATA", payload: json }));
+        .then((json) => dispatch({ type: "UPDATE_LIST", payload: json }));
     }
   }, []);
 
@@ -59,31 +59,37 @@ const Home = () => {
   };
 
   return (
-    <div>
-      <div>
-        <h1 className="text-green-400">Select Quiz</h1>
+    <div className="w-full flex flex-col items-center justify-center h-screen">
+      <h1 className="text-green-400 text-xl font-bold mb-5">Select Quiz</h1>
+
+      <div className="flex flex-col">
+        {list?.map((item) => (
+          <li
+            key={item?.id}
+            className="grid grid-cols-3 items-center w-96 justify-between"
+          >
+            <p className="text-lg ">{item?.quizName}</p>
+            {item?.isCompleted ? (
+              <p className="text-green-400">Completed</p>
+            ) : (
+              <p className="text-grey-400">Not started</p>
+            )}
+
+            <button
+              onClick={() => navigate(`/quiz/${item?.id}`)}
+              className="text-center bg-green-400 w-32 border border-gray-400 rounded-md h-5 text-sm font-bold"
+            >
+              Go to Quiz
+            </button>
+          </li>
+        ))}
       </div>
-      <div>
-        <ul>
-          {list?.map((item) => (
-            <li key={item?.id}>
-              <p>{item?.quizName}</p>
-              <p
-                style={{
-                  color: item?.isCompleted ? "text-green-400" : "text-grey-400",
-                }}
-              >
-                {item.isCompleted ? "Completed" : "Not started"}
-              </p>
-              <button onClick={() => navigate("/")}>Start</button>
-              <button onClick={() => navigate(`/quiz/${item?.id}`)}>
-                Go to Quiz
-              </button>
-            </li>
-          ))}
-        </ul>
-      </div>
-      <button onClick={() => logOut()}>LogOut</button>
+      <button
+        onClick={() => logOut()}
+        className="text-center bg-green-400 text-base w-32 my-5 border border-gray-400 rounded-md h-10  font-bold"
+      >
+        LogOut
+      </button>
     </div>
   );
 };

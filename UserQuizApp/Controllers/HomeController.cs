@@ -59,6 +59,7 @@ namespace UserQuizApp.Controllers
                 Quiz quiz = _context.GetQuizzes().Where(x => x.Id == id).FirstOrDefault();
                 var user = _context.GetUsers().Where(x => x.Name.Equals(_auth.ValidatedUserName())).FirstOrDefault();
                 user.Quizzes.Add(quiz);
+                _context.SaveChanges();
             }
             return new OkResult();
         }
@@ -68,8 +69,9 @@ namespace UserQuizApp.Controllers
         {
             if (_auth.ValidateUser())
             {
-                Quiz quiz = _context.GetQuizzes().Where(x => x.Id == id).FirstOrDefault();
-                quiz.IsCompleted = true;
+                _context.GetQuizzes().Where(x => x.Id == id).FirstOrDefault().IsCompleted = true;
+                
+                _context.SaveChanges();
             }
             return new OkResult();
         }

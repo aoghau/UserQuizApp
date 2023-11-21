@@ -101,7 +101,7 @@ namespace UserQuizAppAPI.Test
             var controller = new HomeController(null, mockDb.Object, mockAuth.Object);
 
             //Act
-            controller.PassQuiz(newquiz.QuizName);
+            controller.PassQuiz(newquiz.Id);
 
             //Assert
             Assert.IsTrue(quizzes.Where(x => x.QuizName.Equals(newquiz.QuizName)).FirstOrDefault().IsCompleted);

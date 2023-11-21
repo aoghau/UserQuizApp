@@ -67,39 +67,38 @@ const Login = () => {
   }
 
   return (
-    <div className="container logup__wrapper is-flex is-flex-direction-column">
-      <h1 className="content logup__title has-text-centered is-3">Login</h1>
-      <form onSubmit={handleSubmit}>
-        <div className="field">
-          <div className="control">
-            <input
-              className="input"
-              type="text"
-              name="name"
-              placeholder="Enter name"
-              value={user.name}
-              onChange={nameHandler}
-            />
-          </div>
-        </div>
-        <div className="field">
-          <div className="control">
-            <input
-              className="input"
-              value={user.password}
-              name="password"
-              type={pass ? "text" : "password"}
-              placeholder="Password"
-              onChange={(e) => passwordHandler(e)}
-            />
-          </div>
-        </div>
-        <div className="logup__fild field control">
-          <span onClick={togglePass} className="logup__text">
-            Show password
-          </span>
-        </div>
-        <button type="submit" className="button is-danger is-5 title btn">
+    <div className="w-full flex flex-col items-center justify-center h-screen">
+      <h1 className="text-green-400 text-xl font-bold">Login</h1>
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col items-center justify-center"
+      >
+        <input
+          className="w-32 border border-gray-400 rounded-md h-10 my-5 text-center"
+          type="text"
+          name="name"
+          placeholder="Enter name"
+          value={user.name}
+          onChange={nameHandler}
+        />
+
+        <input
+          className="w-32 border border-gray-400 rounded-md h-10 text-center"
+          value={user.password}
+          name="password"
+          type={pass ? "text" : "password"}
+          placeholder="Password"
+          onChange={(e) => passwordHandler(e)}
+        />
+
+        <span onClick={togglePass} className=" text-gray-400 mt-2">
+          Show password
+        </span>
+
+        <button
+          type="submit"
+          className="text-center bg-green-400  w-32 my-5 border border-gray-400 rounded-md h-10  font-bold"
+        >
           Login
         </button>
       </form>

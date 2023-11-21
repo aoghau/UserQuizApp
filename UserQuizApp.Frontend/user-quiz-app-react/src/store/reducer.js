@@ -6,8 +6,6 @@ const initialState = {
 
 const rootReducer = (state = initialState, action) => {
   switch (action.type) {
-    case "UPDATE_DATA":
-      return action.payload;
     case "UPDATE_LIST":
       return {
         ...state,
