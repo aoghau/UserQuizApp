@@ -34,7 +34,7 @@ namespace UserQuizAppAPI.Test
             mockDb.Setup<List<Quiz>>(x => x.GetQuizzes()).Returns(quizzes);
             mockAuth.Setup<bool>(x => x.ValidateUser()).Returns(true);
             mockAuth.Setup<string>(x => x.ValidatedUserName()).Returns(sample.Name);
-            var controller = new HomeController(null, mockDb.Object, mockAuth.Object);
+            var controller = new HomeController(mockDb.Object, mockAuth.Object);
             var combwrap = new CombinedWrapper<Quiz>(){ List = quizzes.ToArray(), WrapName = sample.Name};
             var actual = new JsonResult(combwrap);
             //Act
@@ -53,7 +53,7 @@ namespace UserQuizAppAPI.Test
             mockDb.Setup<List<User>>(x => x.GetUsers()).Returns(users);
             mockDb.Setup<List<Quiz>>(x => x.GetQuizzes()).Returns(quizzes);
             mockAuth.Setup<bool>(x => x.ValidateUser()).Returns(true);
-            var controller = new HomeController(null, mockDb.Object, mockAuth.Object);
+            var controller = new HomeController(mockDb.Object, mockAuth.Object);
 
             //Act
             var response = controller.AssignmentSelection();
@@ -76,10 +76,10 @@ namespace UserQuizAppAPI.Test
             mockAuth.Setup<string>(x => x.ValidatedUserName()).Returns(sample.Name);
             var newquiz = new Quiz() { QuizName = "new", IsCompleted = false, Questions = null, Id = 1 };
             newquizzes.Add(newquiz);
-            var controller = new HomeController(null, mockDb.Object, mockAuth.Object);
+            var controller = new HomeController(mockDb.Object, mockAuth.Object);
 
             //Act
-            controller.AssignQuiz(newquiz.QuizName);
+            controller.AssignQuiz(newquiz.Id);
 
             //Assert
             Assert.IsNotNull(sample.Quizzes.Where(x => x.QuizName.Equals(newquiz.QuizName)).FirstOrDefault());
@@ -98,7 +98,7 @@ namespace UserQuizAppAPI.Test
             mockAuth.Setup<string>(x => x.ValidatedUserName()).Returns(sample.Name);
             var newquiz = new Quiz() { QuizName = "new", IsCompleted = false, Questions = null, Id = 1 };
             newquizzes.Add(newquiz);
-            var controller = new HomeController(null, mockDb.Object, mockAuth.Object);
+            var controller = new HomeController(mockDb.Object, mockAuth.Object);
 
             //Act
             controller.PassQuiz(newquiz.Id);
@@ -131,7 +131,7 @@ namespace UserQuizAppAPI.Test
             }
             QuizWrapper wrapper = new QuizWrapper(){ List = actualWrappers, QuizWrapName = newquiz.QuizName};
             var actual = new JsonResult(wrapper);
-            var controller = new HomeController(null, mockDb.Object, mockAuth.Object);
+            var controller = new HomeController(mockDb.Object, mockAuth.Object);
 
             //Act
             var response = controller.LoadQuiz(1);

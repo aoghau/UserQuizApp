@@ -6,6 +6,7 @@ namespace UserQuizApp.Middleware
 {
     public class JWTAuthService : IAuthService
     {
+        //HTTP context accessor dependency injection
         private readonly IHttpContextAccessor _contextAccessor;
 
         public JWTAuthService(IHttpContextAccessor contextAccessor)
@@ -13,6 +14,10 @@ namespace UserQuizApp.Middleware
             _contextAccessor = contextAccessor;            
         }
 
+        /// <summary>
+        /// Method that checks the current request headers to find the bearer token
+        /// </summary>
+        /// <returns>True, if there is a token and it's valid, false if otherwise</returns>
         public bool ValidateUser()
         {
             if (_contextAccessor.HttpContext.Request.Headers.TryGetValue("Authorization", out var authHeader))
@@ -38,6 +43,10 @@ namespace UserQuizApp.Middleware
             return false;
         }
 
+        /// <summary>
+        /// Method that returns the name of the authorized user
+        /// </summary>
+        /// <returns>String name, that represents the name of the authorized user</returns>
         public string ValidatedUserName()
         {
             if (_contextAccessor.HttpContext.Request.Headers.TryGetValue("Authorization", out var authHeader))

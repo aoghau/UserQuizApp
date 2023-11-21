@@ -13,7 +13,6 @@ namespace UserQuizApp.Data
 
         public int QuizId { get; set; }
 
-
         public List<Answer> Answers { get; set; }
     }
 }

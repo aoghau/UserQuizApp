@@ -11,18 +11,22 @@ using UserQuizApp.Data.Interfaces;
 namespace UserQuizApp.Controllers
 {
     public class HomeController : Controller
-    {
-        private IConfiguration _config;
+    {        
+        //data context dependency injection
         private IQuizDataContext _context;
+        //authorization service dependency injection
         private IAuthService _auth;
 
-        public HomeController(IConfiguration config, IQuizDataContext context, IAuthService auth)
-        {
-            _config = config;
+        public HomeController(IQuizDataContext context, IAuthService auth)
+        {            
             _context = context;
             _auth = auth;
         }
 
+        /// <summary>
+        /// Action that returns JSON with all the quizzes that user has. If user is not logged in, returns all quizzes - but further interaction requires authorization
+        /// </summary>
+        /// <returns>JSON result with an array of quizzes inside</returns>
         [HttpGet("home")]
         public IActionResult Home()
         {
@@ -37,6 +41,10 @@ namespace UserQuizApp.Controllers
             return new JsonResult(wrapper);
         }
 
+        /// <summary>
+        /// Action returns all quizzes to assign to user
+        /// </summary>
+        /// <returns>JSON with quizzes, or Unauthorized if not logged in</returns>
         [HttpPost("assignment")]
         public IActionResult AssignmentSelection()
         {
@@ -50,7 +58,11 @@ namespace UserQuizApp.Controllers
         }
 
 
-
+        /// <summary>
+        /// Action that assigns quiz to a user, so that it appears when Home() action is called
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>OkResult in all cases, this action is not accessible to unauthorized users</returns>
         [HttpPost("assign")]
         public IActionResult AssignQuiz(int id)
         {
@@ -64,6 +76,11 @@ namespace UserQuizApp.Controllers
             return new OkResult();
         }
 
+        /// <summary>
+        /// Action that sets a quiz to completed
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>OkResult in all cases, this action is not accessible to unauthorized users</returns>
         [HttpPost("pass")]
         public IActionResult PassQuiz(int id)
         {
@@ -76,6 +93,11 @@ namespace UserQuizApp.Controllers
             return new OkResult();
         }
 
+        /// <summary>
+        /// Returns all the info about the quiz, including all questions and all answers
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>JSON with an array of questions that contains an array of answers</returns>
         [HttpGet("id")]
         public IActionResult LoadQuiz(int id)
         {
@@ -96,6 +118,10 @@ namespace UserQuizApp.Controllers
             return new UnauthorizedResult();
         }
 
+        /// <summary>
+        /// Action that adds a sample quiz with a question to the database for testing purposes
+        /// </summary>
+        /// <returns>JSON with the created quiz</returns>
         [HttpPost("sample")]
         public IActionResult AddSample()
         {
@@ -122,6 +148,10 @@ namespace UserQuizApp.Controllers
             return new JsonResult(quiz);
         }
 
+        /// <summary>
+        /// Action that creates a more complex quiz with a couple of questions and multiple answers and adds it to the database for testing purposes
+        /// </summary>
+        /// <returns>JSON with the quiz</returns>
         [HttpPost("sample/big")]
         public IActionResult AddComplexSample()
         {

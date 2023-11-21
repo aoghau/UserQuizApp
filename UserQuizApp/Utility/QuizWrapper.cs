@@ -2,6 +2,7 @@
 
 namespace UserQuizApp.Utility
 {
+    //A couple of more advanced utility classes that wrap Quiz entity so that it can be turned into a JSON in its entirety
     public class QuizWrapper
     {
         public string QuizWrapName { get; set; }

@@ -15,10 +15,13 @@ namespace UserQuizApp.Controllers
         public LoginController(IConfiguration config, IQuizDataContext quizDataContext)
         {
             _config = config;
-            _context = quizDataContext;
-            //User user = new User(){ };
+            _context = quizDataContext;            
         }
 
+        /// <summary>
+        /// Creates a sample user to test the application with
+        /// </summary>
+        /// <returns>OkObject with the created user inside to check it just in case</returns>
         [HttpGet("sample")]
         public IActionResult CreateSampleUser() 
         {
@@ -28,6 +31,12 @@ namespace UserQuizApp.Controllers
             return new OkObjectResult(sample);
         }
 
+        /// <summary>
+        /// Loging in, action then returns a JWT bearer token that frontend can work with
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="password"></param>
+        /// <returns>Not found if there is no such user, Ok with token if there is</returns>
         [HttpPost("Login")]
         public IActionResult Login(string name, string password)
         {
@@ -42,6 +51,12 @@ namespace UserQuizApp.Controllers
 
         }
 
+        /// <summary>
+        /// Generates the token
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="password"></param>
+        /// <returns>JWT token</returns>
         private string Generate(string name, string password)
         {
             var securityKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
@@ -62,6 +77,12 @@ namespace UserQuizApp.Controllers
         }
 
 
+        /// <summary>
+        /// Checks if there is such a user in database
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="password"></param>
+        /// <returns>True if user exists, false if not</returns>
         private bool IsAuthorizedUser(string username, string password)
         {            
             if (_context.Users.Where(x => x.Name.Equals(username) && x.Password.Equals(password))?.Single() != null)
